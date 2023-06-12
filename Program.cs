@@ -1,4 +1,10 @@
-﻿using System;
+﻿//
+// Text Editor Application
+// 06/12/2023
+// David J Tinley
+//
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +22,7 @@ namespace Text_Editor_App
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new form_Main());
         }
     }
 }
