@@ -23,7 +23,7 @@ namespace Text_Editor_App
         Font default_font;
 
         // Set the split character for the word count total
-        private char[] split_characters = "\n,.:;\"'?!".ToArray();
+        private char[] split_characters = "\n,' '.:;\"'?!".ToArray();
 
         // Flag if editing is in progress
         bool editing_in_progress = false;
@@ -33,6 +33,7 @@ namespace Text_Editor_App
         string file_to_save;
         string retrieved_text = "";
 
+        // Main form initializing function
         public form_Main()
         {
             InitializeComponent();
@@ -44,9 +45,10 @@ namespace Text_Editor_App
             Application.Exit();
         }
 
-        // Centers the Application on the screen upon opening
+        // Main form loading function
         private void form_Main_Load(object sender, EventArgs e)
         {
+            // Centers the Application on the screen upon opening
             this.CenterToScreen();
 
             // Handle initial word wrap option
@@ -58,9 +60,12 @@ namespace Text_Editor_App
             {
                 wordWrapOffToolStripMenuItem.Text = "Word Wrap is Off";
             }
+
+            // Defining default font at load time
+            default_font = text_content.Font;
         }
 
-        // Function that handles Opening of Files from the menu
+        // Handles Opening of Files from the menu
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Check if editing is in progress and handle accordingly
@@ -80,20 +85,27 @@ namespace Text_Editor_App
             if (dr == DialogResult.OK)
             {
                 // Get the path of the file to be opened
-                string file_to_open = @dialog_open_file.FileName;
+                file_to_open = @dialog_open_file.FileName;
 
                 // Read file and display in rich text box
                 try
                 {
                     // Read all the text from the file to be opened
-                    text_content.Text = File.ReadAllText(@file_to_open);
+                    // text_content.Text = File.ReadAllText(@file_to_open);
 
                     // Set status label to show file that was opened
-                    status_label.Text = "Opened File: " + @file_to_open;
+                    // status_label.Text = "Opened File: " + @file_to_open;
 
                     // Editing in progress is now true
-                    editing_in_progress = true;
-                    this.Text = "Text Editor: " + @file_to_open;
+                    // editing_in_progress = true;
+                    // this.Text = "Text Editor: " + @file_to_open;
+
+                    // Open the file by calling a separate thread via the bgWorker object
+                    if (!open_file_bgWorker.IsBusy)
+                    {
+                        open_file_bgWorker.RunWorkerAsync();
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -107,7 +119,7 @@ namespace Text_Editor_App
             }
         }
 
-        // Function that handles Saving of Files from the menu
+        // Handles Saving of Files from the menu
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dr = dialog_save_file.ShowDialog();
@@ -115,7 +127,7 @@ namespace Text_Editor_App
             // If user clicks selects a path to save the file
             if (dr == DialogResult.OK)
             {
-                string file_to_save = @dialog_save_file.FileName;
+                file_to_save = @dialog_save_file.FileName;
 
                 try
                 {
@@ -142,7 +154,7 @@ namespace Text_Editor_App
             }
         }
 
-        // Function that handles making a New File from the menu
+        // Handles making a New File from the menu
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Check if currently editing a file
@@ -177,7 +189,7 @@ namespace Text_Editor_App
             editing_in_progress = true;
         }
 
-        // Function that handles word wrapping option in format menu
+        // Handles word wrapping option in format menu
         private void wordWrapOffToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // If word wrap is already on
@@ -194,7 +206,7 @@ namespace Text_Editor_App
             }
         }
 
-        // Function that handles increase font size option in format menu
+        // Handles increase font size option in format menu
         private void increaseFontSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Set 20 as maximum font size
@@ -210,6 +222,7 @@ namespace Text_Editor_App
             }
         }
 
+        // Handles decrease font size option in format menu
         private void decreaseFontSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Set 8 as minimum font size
@@ -224,10 +237,93 @@ namespace Text_Editor_App
             }
         }
 
-        // Function that handles reset to default font size option in format menu
+        // Handles reset to default font size option in format menu
         private void resetFontSizeToDefaultToolStripMenuItem_Click(object sender, EventArgs e)
         {
             text_content.Font = default_font;
+        }
+
+        // Handles the "about" option in Help menu
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(this, "Text Editor made with WinForms (C#/.NET Framework)", "About the editor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // Handles text being changed in the rich text box
+        private void text_content_TextChanged(object sender, EventArgs e)
+        {
+            update_status_line();
+            editing_in_progress = true;
+        }
+
+        // Updates status line w/ line #, total lines, word count
+        private void update_status_line()
+        {
+            status_label.Text = "Editing Line: " + (text_content.GetLineFromCharIndex(text_content.SelectionStart) + 1).ToString() + " - Total Lines: " + text_content.Lines.Count().ToString() + " - Total Words: " + text_content.Text.Split(split_characters, StringSplitOptions.RemoveEmptyEntries).Length.ToString();
+        }
+
+        // Handles key down events in rich text box
+        private void key_down(object sender, KeyEventArgs e)
+        {
+            // Handles the copy-paste event in order to paste as plain text only
+            if (e.Control && e.KeyCode == Keys.V)
+            {
+                text_content.Text += (string)Clipboard.GetData("Text");
+                e.Handled = true;
+            }
+            // Handles the ctrl-s (save) combination
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                saveAsToolStripMenuItem_Click(sender, e);
+                e.Handled = true;
+            }
+        }
+
+        // Handles closing event
+        private void form_Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Check if editing is in progress
+            if (editing_in_progress)
+            {
+                DialogResult dr = MessageBox.Show(this, "You are currently editing a file." + Environment.NewLine + "Would you like to save before closing?", "Close the Text Editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                // Use save as function if yes is chosen
+                if (dr == DialogResult.Yes)
+                {
+                    saveAsToolStripMenuItem_Click(sender, e);
+                }
+                // If no is chosen, editor closes without saving
+                // If Cancel is chosen, editor cancels the closing event
+                else if (dr == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void open_file_bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // Retrieve the file contents using a separate thread/process
+            try
+            {
+                retrieved_text = File.ReadAllText(@file_to_open);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void open_file_bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // After file contents are retrieved, perform the rest of the tasks
+            text_content.Text = retrieved_text;
+            status_label.Text = "Opened File: " + @file_to_open;
+            editing_in_progress = true;
+            this.Text = "Text Editor: " + @file_to_open;
+
+            // Update status line with opened file info
+            update_status_line();
         }
     }
 }

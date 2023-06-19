@@ -48,6 +48,8 @@
             this.text_content = new System.Windows.Forms.RichTextBox();
             this.dialog_open_file = new System.Windows.Forms.OpenFileDialog();
             this.dialog_save_file = new System.Windows.Forms.SaveFileDialog();
+            this.open_file_bgWorker = new System.ComponentModel.BackgroundWorker();
+            this.save_file_bgWorker = new System.ComponentModel.BackgroundWorker();
             this.menu_strip.SuspendLayout();
             this.status_strip.SuspendLayout();
             this.SuspendLayout();
@@ -61,7 +63,7 @@
             this.helpToolStripMenuItem});
             this.menu_strip.Location = new System.Drawing.Point(0, 0);
             this.menu_strip.Name = "menu_strip";
-            this.menu_strip.Size = new System.Drawing.Size(800, 28);
+            this.menu_strip.Size = new System.Drawing.Size(800, 30);
             this.menu_strip.TabIndex = 0;
             this.menu_strip.Text = "menuStrip1";
             // 
@@ -74,13 +76,13 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
             this.newToolStripMenuItem.Text = "&New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -94,7 +96,7 @@
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
             this.saveAsToolStripMenuItem.Text = "&Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -119,7 +121,7 @@
             this.decreaseFontSizeToolStripMenuItem,
             this.resetFontSizeToDefaultToolStripMenuItem});
             this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
-            this.formatToolStripMenuItem.Size = new System.Drawing.Size(70, 24);
+            this.formatToolStripMenuItem.Size = new System.Drawing.Size(70, 26);
             this.formatToolStripMenuItem.Text = "F&ormat";
             // 
             // wordWrapOffToolStripMenuItem
@@ -168,6 +170,7 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(133, 26);
             this.aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // status_strip
             // 
@@ -190,11 +193,13 @@
             // 
             this.text_content.Dock = System.Windows.Forms.DockStyle.Fill;
             this.text_content.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.text_content.Location = new System.Drawing.Point(0, 28);
+            this.text_content.Location = new System.Drawing.Point(0, 30);
             this.text_content.Name = "text_content";
-            this.text_content.Size = new System.Drawing.Size(800, 396);
+            this.text_content.Size = new System.Drawing.Size(800, 394);
             this.text_content.TabIndex = 2;
             this.text_content.Text = "";
+            this.text_content.TextChanged += new System.EventHandler(this.text_content_TextChanged);
+            this.text_content.KeyDown += new System.Windows.Forms.KeyEventHandler(this.key_down);
             // 
             // dialog_open_file
             // 
@@ -203,6 +208,11 @@
             // dialog_save_file
             // 
             this.dialog_save_file.Filter = "Text Files (*.txt)|*.txt";
+            // 
+            // open_file_bgWorker
+            // 
+            this.open_file_bgWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.open_file_bgWorker_DoWork);
+            this.open_file_bgWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.open_file_bgWorker_RunWorkerCompleted);
             // 
             // form_Main
             // 
@@ -215,6 +225,7 @@
             this.MainMenuStrip = this.menu_strip;
             this.Name = "form_Main";
             this.Text = "Text Editor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.form_Main_FormClosing);
             this.Load += new System.EventHandler(this.form_Main_Load);
             this.menu_strip.ResumeLayout(false);
             this.menu_strip.PerformLayout();
@@ -247,6 +258,8 @@
         private System.Windows.Forms.RichTextBox text_content;
         private System.Windows.Forms.OpenFileDialog dialog_open_file;
         private System.Windows.Forms.SaveFileDialog dialog_save_file;
+        private System.ComponentModel.BackgroundWorker open_file_bgWorker;
+        private System.ComponentModel.BackgroundWorker save_file_bgWorker;
     }
 }
 
