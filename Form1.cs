@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Text_Editor_App
 {
@@ -71,11 +72,20 @@ namespace Text_Editor_App
             // Check if editing is in progress and handle accordingly
             if (editing_in_progress)
             {
-                DialogResult dr_discard = MessageBox.Show(this, "You are currently editing this file." + Environment.NewLine + "Discard changes?", "Open text document", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                if (dr_discard != DialogResult.Yes)
+                DialogResult dr_discard = MessageBox.Show(this, "You are currently editing this file." + Environment.NewLine + "Save changes to current file?", "Open text document", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                // Save before opening new file if user selects 'yes'
+                if (dr_discard == DialogResult.Yes)
+                {
+                    saveAsToolStripMenuItem_Click(sender, e);
+                }
+
+                // Return if user cancels opening
+                if (dr_discard == DialogResult.Cancel)
                 {
                     return;
                 }
+
             }
 
             // Displays the open file dialog from "File -> Open"
@@ -132,15 +142,20 @@ namespace Text_Editor_App
                 try
                 {
                     // Write all of the text from the current file
-                    File.WriteAllText(@file_to_save, @text_content.Text);
+                    // File.WriteAllText(@file_to_save, @text_content.Text);
 
                     // Display Saved File path
-                    status_label.Text = "File Saved As: " + @file_to_save;
+                    // status_label.Text = "File Saved As: " + @file_to_save;
 
                     // No longer editing
-                    editing_in_progress = false;
+                    // editing_in_progress = false;
 
-                    this.Text = "Text Editor: " + @file_to_save;
+                    // this.Text = "Text Editor: " + @file_to_save;
+
+                    if (!save_file_bgWorker.IsBusy)
+                    {
+                        save_file_bgWorker.RunWorkerAsync();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -323,6 +338,40 @@ namespace Text_Editor_App
             this.Text = "Text Editor: " + @file_to_open;
 
             // Update status line with opened file info
+            update_status_line();
+        }
+
+        private void save_file_bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // Save the file using a separate thread/process
+            try
+            {
+                if (text_content.InvokeRequired)
+                {
+                    Invoke((MethodInvoker)delegate ()
+                    {
+                        File.WriteAllText(@file_to_save, text_content.Text);
+                    });
+                }
+                else
+                {
+                    File.WriteAllText(@file_to_save, text_content.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Error Message", ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void save_file_bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // After the file is saved via the separate thread, perform the rest of the tasks
+            status_label.Text = "File Saved As: " + @file_to_save;
+            editing_in_progress = false;
+            this.Text = "Text Editor: " + @file_to_save;
+
+            // Update status line with saved file
             update_status_line();
         }
     }

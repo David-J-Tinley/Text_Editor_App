@@ -63,7 +63,7 @@
             this.helpToolStripMenuItem});
             this.menu_strip.Location = new System.Drawing.Point(0, 0);
             this.menu_strip.Name = "menu_strip";
-            this.menu_strip.Size = new System.Drawing.Size(800, 30);
+            this.menu_strip.Size = new System.Drawing.Size(800, 28);
             this.menu_strip.TabIndex = 0;
             this.menu_strip.Text = "menuStrip1";
             // 
@@ -76,7 +76,7 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newToolStripMenuItem
@@ -121,7 +121,7 @@
             this.decreaseFontSizeToolStripMenuItem,
             this.resetFontSizeToDefaultToolStripMenuItem});
             this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
-            this.formatToolStripMenuItem.Size = new System.Drawing.Size(70, 26);
+            this.formatToolStripMenuItem.Size = new System.Drawing.Size(70, 24);
             this.formatToolStripMenuItem.Text = "F&ormat";
             // 
             // wordWrapOffToolStripMenuItem
@@ -162,7 +162,7 @@
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(55, 26);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // aboutToolStripMenuItem
@@ -191,11 +191,13 @@
             // 
             // text_content
             // 
+            this.text_content.AcceptsTab = true;
+            this.text_content.BackColor = System.Drawing.Color.Silver;
             this.text_content.Dock = System.Windows.Forms.DockStyle.Fill;
             this.text_content.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.text_content.Location = new System.Drawing.Point(0, 30);
+            this.text_content.Location = new System.Drawing.Point(0, 28);
             this.text_content.Name = "text_content";
-            this.text_content.Size = new System.Drawing.Size(800, 394);
+            this.text_content.Size = new System.Drawing.Size(800, 396);
             this.text_content.TabIndex = 2;
             this.text_content.Text = "";
             this.text_content.TextChanged += new System.EventHandler(this.text_content_TextChanged);
@@ -214,17 +216,23 @@
             this.open_file_bgWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.open_file_bgWorker_DoWork);
             this.open_file_bgWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.open_file_bgWorker_RunWorkerCompleted);
             // 
+            // save_file_bgWorker
+            // 
+            this.save_file_bgWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.save_file_bgWorker_DoWork);
+            this.save_file_bgWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.save_file_bgWorker_RunWorkerCompleted);
+            // 
             // form_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.text_content);
             this.Controls.Add(this.status_strip);
             this.Controls.Add(this.menu_strip);
             this.MainMenuStrip = this.menu_strip;
             this.Name = "form_Main";
-            this.Text = "Text Editor";
+            this.Text = "Plain Text Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.form_Main_FormClosing);
             this.Load += new System.EventHandler(this.form_Main_Load);
             this.menu_strip.ResumeLayout(false);
