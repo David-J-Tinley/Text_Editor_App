@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(form_Main));
             this.menu_strip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -186,8 +187,8 @@
             // status_label
             // 
             this.status_label.Name = "status_label";
-            this.status_label.Size = new System.Drawing.Size(193, 20);
-            this.status_label.Text = "Welcome to the Text Editor!";
+            this.status_label.Size = new System.Drawing.Size(229, 20);
+            this.status_label.Text = "Welcome to the Plain Text Editor!";
             // 
             // text_content
             // 
@@ -230,6 +231,7 @@
             this.Controls.Add(this.text_content);
             this.Controls.Add(this.status_strip);
             this.Controls.Add(this.menu_strip);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menu_strip;
             this.Name = "form_Main";
             this.Text = "Plain Text Editor";
